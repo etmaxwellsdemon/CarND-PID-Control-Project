@@ -34,7 +34,16 @@ int main()
 
   PID pid;
   // TODO: Initialize the pid variable.
-
+    /*The parameter was tuned manually
+     At first, I've chosed parameter similar to Sebastian's lesson as 0.2, 0.004, 3;
+     I found that the car oscillate a bit so that I decrease the P parameter.
+     Similarly, I also decrease I and keep the D parameter, it works under 0.3 throttle.
+     
+     I've also tested on higher throttle and found that we need to change the parameter. 
+     It's obvious as we're driving car at a higher speed, a small amount of the steering angle changes will affect the direction of the car significantly*/
+    
+    pid.Init(0.1, 0.001, 3);
+    
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -57,6 +66,8 @@ int main()
           * NOTE: Feel free to play around with the throttle and speed. Maybe use
           * another PID controller to control the speed!
           */
+            pid.UpdateError(cte);
+            steer_value = pid.TotalError();
           
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
